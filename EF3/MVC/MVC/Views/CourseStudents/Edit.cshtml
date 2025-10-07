@@ -1,0 +1,35 @@
+﻿@model MVC.Models.CourseStudents
+
+@{
+    ViewData["Title"] = "Edit CourseStudent";
+    var students = ViewBag.Students as IEnumerable<MVC.Models.Student>;
+    var courses = ViewBag.Courses as IEnumerable<MVC.Models.Course>;
+}
+
+<h2>Edit CourseStudent</h2>
+
+<form asp-action="Edit" asp-controller="CourseStudents" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="CourseStudentsId" />
+
+    <div class="form-group">
+        <label asp-for="StudentId"></label>
+        <select asp-for="StudentId" class="form-control" asp-items="@(new SelectList(students, "Id", "Name", Model.StudentId))"></select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CourseId"></label>
+        <select asp-for="CourseId" class="form-control" asp-items="@(new SelectList(courses, "Id", "Name", Model.CourseId))"></select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Degree"></label>
+        <input asp-for="Degree" class="form-control" />
+    </div>
+
+    <input type="submit" value="Save" class="btn btn-primary" />
+</form>
+
+<p>
+    <a asp-action="List" asp-controller="CourseStudents">Back to List</a>
+</p>

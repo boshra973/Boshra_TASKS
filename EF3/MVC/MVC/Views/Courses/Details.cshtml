@@ -1,0 +1,14 @@
+﻿@model MVC.Models.Course
+
+<h2>Course Details</h2>
+
+<div>
+    <p><strong>Id:</strong> @Model.Id</p>
+    <p><strong>Name:</strong> @Model.Name</p>
+    <p><strong>DepartmentId:</strong> @Model.DeptId</p>
+    <p><strong>InstructorId:</strong> @Model.InstructorId</p>
+</div>
+
+<p>
+    <a asp-action="List" asp-controller="Courses">Back to List</a>
+</p>

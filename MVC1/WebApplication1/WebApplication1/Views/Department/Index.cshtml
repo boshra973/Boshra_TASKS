@@ -1,0 +1,22 @@
+﻿@using MVC1.Models
+@model List<Department>
+@{
+    ViewData["Title"] = "Department Index";
+}
+
+<h1>Index</h1>
+
+<table class="table table-hover table-bordered">
+    <tr>
+        <th>Number</th>
+        <th>Name</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.Name</td>
+        </tr>
+    }
+</table>

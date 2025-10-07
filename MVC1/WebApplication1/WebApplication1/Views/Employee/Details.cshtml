@@ -1,0 +1,19 @@
+﻿@using MVC1.Models
+@model Employee
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+@ViewBag
+<h2 style ="color: @ViewBag.Color">@Model.Name</h2>
+<h3>@ViewData["Msg"]</h3>
+<h2>@(ViewBag.Temp-10)</h2>
+<select class="form-check form-control">
+    @foreach(var item in (List<string>)ViewBag.branch)
+    {
+        <option>@item</option>
+    }
+</select>
+

@@ -1,0 +1,38 @@
+﻿<!--// any thing written here without being in a tab
+will be printed as it is-->
+<h1> Hello world from first view </h1>
+<style>
+	h1 
+	{
+		color: red
+	}
+</style>
+
+<!--Block code -->
+@{
+	// this is how to write a c# code in html
+	// @{}
+	int x=10;
+	int y = x + 10;
+}
+
+<!--in line statement-->
+<h2>@x</h2>
+
+<!--Condition statement-->
+@if (x>y)
+{
+	// any c# code must be in brackets even if it's one line 
+	// as we must declare the scope 
+	<h2>x greater than y</h2>
+}
+else
+{
+	<h2> x = @x less than y </h2>
+}
+
+<!--looping statment-->
+
+
+
+

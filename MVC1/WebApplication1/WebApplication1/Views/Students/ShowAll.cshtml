@@ -1,0 +1,20 @@
+﻿@using MVC1.Models
+@using System.Collections.Generic
+@model List<Students>
+
+<table class="table table-bordered table-hover ">
+@foreach (var item in Model)
+		{
+			<tr>
+			<td>@item.id</td>
+			<td>@item.name</td>
+			<td>@item.image</td>
+			<td>
+				<!--local domain ~/Images-->
+			<td><img src="@(Url.Content("~/Images/" + item.image + ".png"))" 
+				style="width:80px;" />
+
+			</td>
+			</tr>
+		}
+	</table>

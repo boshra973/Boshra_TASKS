@@ -1,0 +1,13 @@
+﻿@model MVC.Models.CourseStudents
+
+<h2>Course Student Details</h2>
+
+<div>
+    <p><strong>Student:</strong> @Model.Student?.Name</p>
+    <p><strong>Course:</strong> @Model.Course?.Name</p>
+    <p><strong>Degree:</strong> @Model.Degree</p>
+</div>
+
+<p>
+    <a asp-action="List">Back to List</a>
+</p>
