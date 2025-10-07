@@ -1,33 +1,42 @@
-﻿@model IEnumerable<MVC.Models.CourseStudents>
+﻿@model IEnumerable<MVC.Models.Department>
 
-<h2>Course Students</h2>
+@{
+    ViewData["Title"] = "Departments List";
+}
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Add CourseStudent</a>
-</p>
+<h2>Departments</h2>
 
-<table class="table table-bordered">
+<!-- 🔍 Search Form -->
+<form method="get" asp-action="List" class="mb-3">
+    <input type="text" name="search" value="@ViewBag.Search" placeholder="Search by Name or Manager" class="form-control" style="width:300px; display:inline-block;" />
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<!-- 🧾 Table -->
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
-            <th>Student</th>
-            <th>Course</th>
-            <th>Degree</th>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Manager Name</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var cs in Model)
+        @foreach (var dept in Model)
         {
             <tr>
-                <td>@cs.Student?.Name</td>
-                <td>@cs.Course?.Name</td>
-                <td>@cs.Degree</td>
+                <td>@dept.Id</td>
+                <td>@dept.Name</td>
+                <td>@dept.ManagerName</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@cs.CourseStudentsId">Details</a> |
-                    <a asp-action="Edit" asp-route-id="@cs.CourseStudentsId">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@cs.CourseStudentsId">Delete</a>
+                    <a asp-action="Details" asp-route-id="@dept.Id" class="btn btn-info btn-sm">Details</a>
+                    <a asp-action="Edit" asp-route-id="@dept.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@dept.Id" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<a asp-action="Create" class="btn btn-success">Create New Department</a>

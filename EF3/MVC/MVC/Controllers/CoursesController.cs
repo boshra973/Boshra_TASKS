@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MVC.Models;
 using System.Linq;
 
@@ -8,28 +9,41 @@ namespace MVC.Controllers
     {
         ITIContext context = new ITIContext();
 
-        // LIST
-        public IActionResult List()
+        // LIST with Search
+        public IActionResult List(string search)
         {
-            var courses = context.Courses.ToList();
-            return View(courses);
+            var courses = context.Courses
+                                 .Include(c => c.Department)
+                                 .Include(c => c.Instructor)
+                                 .AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                courses = courses.Where(c => c.Name.Contains(search));
+            }
+
+            ViewBag.Search = search;
+            return View(courses.ToList());
         }
 
-        // DETAILS
         public IActionResult Details(int id)
         {
-            var course = context.Courses.FirstOrDefault(c => c.Id == id);
+            var course = context.Courses
+                                .Include(c => c.Department)
+                                .Include(c => c.Instructor)
+                                .FirstOrDefault(c => c.Id == id);
+
             if (course == null) return NotFound();
             return View(course);
         }
 
-        // CREATE (GET)
         public IActionResult Create()
         {
+            ViewBag.Departments = context.Departments.ToList();
+            ViewBag.Instructors = context.Instructors.ToList();
             return View();
         }
 
-        // CREATE (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Course course)
@@ -40,32 +54,40 @@ namespace MVC.Controllers
                 context.SaveChanges();
                 return RedirectToAction(nameof(List));
             }
+
+            ViewBag.Departments = context.Departments.ToList();
+            ViewBag.Instructors = context.Instructors.ToList();
             return View(course);
         }
 
-        // EDIT (GET)
         public IActionResult Edit(int id)
         {
             var course = context.Courses.FirstOrDefault(c => c.Id == id);
             if (course == null) return NotFound();
+
+            ViewBag.Departments = context.Departments.ToList();
+            ViewBag.Instructors = context.Instructors.ToList();
             return View(course);
         }
 
-        // EDIT (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Course course)
+        public IActionResult Edit(int id, Course course)
         {
+            if (id != course.Id) return NotFound();
+
             if (ModelState.IsValid)
             {
                 context.Courses.Update(course);
                 context.SaveChanges();
                 return RedirectToAction(nameof(List));
             }
+
+            ViewBag.Departments = context.Departments.ToList();
+            ViewBag.Instructors = context.Instructors.ToList();
             return View(course);
         }
 
-        // DELETE (direct, handled in list)
         public IActionResult Delete(int id)
         {
             var course = context.Courses.FirstOrDefault(c => c.Id == id);

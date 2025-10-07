@@ -1,24 +1,35 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MVC.Models;
+using System.Linq;
 
 namespace MVC.Controllers
 {
     public class DepartmentsController : Controller
     {
         ITIContext context = new ITIContext();
-        public IActionResult List()
+
+        // LIST with Search
+        public IActionResult List(string search)
         {
-            var departments = context.Departments.ToList();
-            return View(departments);
+            var departments = context.Departments.AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                departments = departments
+                    .Where(d => d.Name.Contains(search) || d.ManagerName.Contains(search));
+            }
+
+            ViewBag.Search = search; // keep the text in the search box
+            return View(departments.ToList());
         }
 
         public IActionResult Details(int id)
         {
             var department = context.Departments.FirstOrDefault(d => d.Id == id);
             if (department == null) return NotFound();
-
             return View(department);
         }
+
         // Create GET
         public IActionResult Create()
         {
@@ -28,14 +39,11 @@ namespace MVC.Controllers
         // Create POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // this displays teh create view 
         public IActionResult Create(Department department)
         {
-            // submit our addings 
             if (ModelState.IsValid)
             {
                 context.Departments.Add(department);
-                // save this to the daatabase 
                 context.SaveChanges();
                 return RedirectToAction(nameof(List));
             }
@@ -45,14 +53,12 @@ namespace MVC.Controllers
         // Edit GET
         public IActionResult Edit(int id)
         {
-            // edit something : say what you want to edit 
             var department = context.Departments.FirstOrDefault(d => d.Id == id);
             if (department == null) return NotFound();
             return View(department);
         }
 
-        // Edit post
-        // post the edits yo u got 
+        // Edit POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Department department)
@@ -66,16 +72,14 @@ namespace MVC.Controllers
             }
             return View(department);
         }
+
         public IActionResult Delete(int id)
         {
-            // handeld in the list view
-
             var department = context.Departments.FirstOrDefault(d => d.Id == id);
             if (department == null) return NotFound();
             context.Departments.Remove(department);
             context.SaveChanges();
             return RedirectToAction(nameof(List));
         }
-
     }
 }

@@ -1,35 +1,53 @@
 ﻿@model IEnumerable<MVC.Models.Course>
 
-<h2>Courses</h2>
+@{
+    ViewData["Title"] = "Courses List";
+}
 
-<p>
-    <a asp-action="Create" asp-controller="Courses" class="btn btn-primary">Add Course</a>
-</p>
+<h2 class="mb-3">Courses</h2>
 
-<table class="table table-bordered">
-    <thead>
+<!-- 🔍 Search Bar -->
+<form method="get" asp-action="List" class="mb-3 d-flex">
+    <input type="text" name="search" value="@ViewBag.Search" class="form-control me-2" placeholder="Search by Course Name..." />
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<!-- 🧾 Courses Table -->
+<table class="table table-bordered table-striped text-center align-middle">
+    <thead class="table-dark">
         <tr>
             <th>Id</th>
-            <th>Name</th>
-            <th>DepartmentId</th>
-            <th>InstructorId</th>
-            <th>Actions</th>
+            <th>Course Name</th>
+            <th>Department</th>
+            <th>Instructor</th>
+            <th style="width: 150px;">Actions</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var course in Model)
+        @if (Model != null && Model.Any())
+        {
+            foreach (var c in Model)
+            {
+                <tr>
+                    <td>@c.Id</td>
+                    <td>@c.Name</td>
+                    <td>@c.Department?.Name</td>
+                    <td>@c.Instructor?.Name</td>
+                    <td style="white-space: nowrap;">
+                        <a asp-action="Details" asp-route-id="@c.Id" class="btn btn-info btn-sm me-1">Details</a>
+                        <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-warning btn-sm me-1">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@c.Id" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
         {
             <tr>
-                <td>@course.Id</td>
-                <td>@course.Name</td>
-                <td>@course.DeptId</td>
-                <td>@course.InstructorId</td>
-                <td>
-                    <a asp-action="Details" asp-controller="Courses" asp-route-id="@course.Id">Details</a> |
-                    <a asp-action="Edit" asp-controller="Courses" asp-route-id="@course.Id">Edit</a> |
-                    <a asp-action="Delete" asp-controller="Courses" asp-route-id="@course.Id">Delete</a>
-                </td>
+                <td colspan="5" class="text-muted">No courses found.</td>
             </tr>
         }
     </tbody>
 </table>
+
+<a asp-action="Create" class="btn btn-success mt-2">Create New Course</a>
