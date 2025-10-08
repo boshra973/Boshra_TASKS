@@ -1,7 +1,12 @@
+using MVC.Models;
+using MVC.Repositories.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IReadableRepository<Student>, StudentRepository>();
+builder.Services.AddScoped<IWritableRepository<Student>, StudentRepository>();
 
 var app = builder.Build();
 
