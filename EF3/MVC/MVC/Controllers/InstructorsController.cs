@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MVC.Models;
 using MVC.Repositories.Interfaces;
@@ -6,6 +7,8 @@ using System.Linq;
 
 namespace MVC.Controllers
 {
+    //only admin and HR, insturctor
+    [Authorize(Roles = "Admin,HR,Instructor")]
     public class InstructorsController : Controller
     {
         private readonly IReadableRepository<Instructor> _readRepo;

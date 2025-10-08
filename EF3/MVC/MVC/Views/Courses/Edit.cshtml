@@ -4,21 +4,42 @@
 
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="Id" />
-    <div class="form-group">
-        <label asp-for="Name"></label>
+
+    <div class="form-group mb-3">
+        <label asp-for="Name" class="form-label"></label>
         <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="DeptId"></label>
-        <input asp-for="DeptId" class="form-control" />
+
+    <div class="form-group mb-3">
+        <label asp-for="DeptId" class="form-label">Department</label>
+        <select asp-for="DeptId" asp-items="ViewBag.Departments" class="form-control"></select>
+        <span asp-validation-for="DeptId" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="InstructorId"></label>
-        <input asp-for="InstructorId" class="form-control" />
+
+    <div class="form-group mb-3">
+        <label asp-for="InstructorId" class="form-label">Instructor</label>
+        <select asp-for="InstructorId" asp-items="ViewBag.Instructors" class="form-control"></select>
+        <span asp-validation-for="InstructorId" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <input type="submit" value="Save" class="btn btn-primary" />
+
+    <div class="form-group mb-3">
+        <label asp-for="MinDegree" class="form-label"></label>
+        <input asp-for="MinDegree" class="form-control" />
+        <span asp-validation-for="MinDegree" class="text-danger"></span>
     </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Degree" class="form-label"></label>
+        <input asp-for="Degree" class="form-control" />
+        <span asp-validation-for="Degree" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Changes</button>
 </form>
 
-<a asp-action="List">Back to List</a>
+<a asp-action="List" class="btn btn-secondary mt-3">Back to List</a>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

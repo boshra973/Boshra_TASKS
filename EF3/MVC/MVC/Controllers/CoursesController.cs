@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MVC.Models;
 using MVC.Repositories.Interfaces;
 using System.Linq;
+using System.Security.Claims;
 
 namespace MVC.Controllers
 {
+    // All roles can access courses
+    [Authorize(Roles = Roles.Admin + "," + Roles.Instructor + "," + Roles.Student + "," + Roles.HR)]
     public class CoursesController : Controller
     {
         private readonly IReadableRepository<Course> _readRepo;
@@ -25,23 +29,37 @@ namespace MVC.Controllers
             _instrRepo = instrRepo;
         }
 
-        //list
+        // General List view
         public IActionResult List(string search)
         {
-            var courses = _readRepo.GetAll().AsQueryable(); 
+            var courses = _readRepo.GetAll().AsQueryable();
 
+            // Filter by search
             if (!string.IsNullOrEmpty(search))
                 courses = courses.Where(c => c.Name.Contains(search));
 
-            // get the selected course 
-            //nullability
-            int? selectedCourseId = HttpContext.Session.GetInt32("SelectedCourseId");
-            ViewBag.SelectedCourseId = selectedCourseId;
+            // Show only instructor courses if logged in as Instructor
+            if (User.IsInRole("Instructor"))
+            {
+                int instructorId = GetCurrentInstructorId();
+                if (instructorId > 0)
+                {
+                    courses = courses.Where(c => c.InstructorId == instructorId);
+                }
+            }
 
+            ViewBag.Search = search;
             return View(courses.ToList());
         }
 
-        // details
+        // Helper to get current instructor ID from claims
+        private int GetCurrentInstructorId()
+        {
+            var idClaim = User.Claims.FirstOrDefault(c => c.Type == "InstructorId")?.Value;
+            return int.TryParse(idClaim, out var id) ? id : 0;
+        }
+
+        // Details
         public IActionResult Details(int id)
         {
             var course = _readRepo.GetById(id);
@@ -49,18 +67,15 @@ namespace MVC.Controllers
             return View(course);
         }
 
-        // create (get)
+        // Create (get)
         public IActionResult Create()
         {
-            var depts = _deptRepo.GetAll()?.ToList() ?? new List<Department>();
-            var instrs = _instrRepo.GetAll()?.ToList() ?? new List<Instructor>();
-
-            ViewBag.Departments = new SelectList(depts, "Id", "Name");
-            ViewBag.Instructors = new SelectList(instrs, "Id", "Name");
+            ViewBag.Departments = new SelectList(_deptRepo.GetAll()?.ToList() ?? new List<Department>(), "Id", "Name");
+            ViewBag.Instructors = new SelectList(_instrRepo.GetAll()?.ToList() ?? new List<Instructor>(), "Id", "Name");
             return View();
         }
 
-        // post: (after get) create
+        // Create (post)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Course course)
@@ -71,29 +86,23 @@ namespace MVC.Controllers
                 return RedirectToAction(nameof(List));
             }
 
-            var depts = _deptRepo.GetAll()?.ToList() ?? new List<Department>();
-            var instrs = _instrRepo.GetAll()?.ToList() ?? new List<Instructor>();
-
-            ViewBag.Departments = new SelectList(depts, "Id", "Name", course.DeptId);
-            ViewBag.Instructors = new SelectList(instrs, "Id", "Name", course.InstructorId);
+            ViewBag.Departments = new SelectList(_deptRepo.GetAll()?.ToList() ?? new List<Department>(), "Id", "Name", course.DeptId);
+            ViewBag.Instructors = new SelectList(_instrRepo.GetAll()?.ToList() ?? new List<Instructor>(), "Id", "Name", course.InstructorId);
             return View(course);
         }
 
-        // edit (get)
+        // Edit (get)
         public IActionResult Edit(int id)
         {
             var course = _readRepo.GetById(id);
             if (course == null) return NotFound();
 
-            var depts = _deptRepo.GetAll()?.ToList() ?? new List<Department>();
-            var instrs = _instrRepo.GetAll()?.ToList() ?? new List<Instructor>();
-
-            ViewBag.Departments = new SelectList(depts, "Id", "Name", course.DeptId);
-            ViewBag.Instructors = new SelectList(instrs, "Id", "Name", course.InstructorId);
+            ViewBag.Departments = new SelectList(_deptRepo.GetAll()?.ToList() ?? new List<Department>(), "Id", "Name", course.DeptId);
+            ViewBag.Instructors = new SelectList(_instrRepo.GetAll()?.ToList() ?? new List<Instructor>(), "Id", "Name", course.InstructorId);
             return View(course);
         }
 
-        //psot edit 
+        // Edit (post)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Course course)
@@ -106,15 +115,12 @@ namespace MVC.Controllers
                 return RedirectToAction(nameof(List));
             }
 
-            var depts = _deptRepo.GetAll()?.ToList() ?? new List<Department>();
-            var instrs = _instrRepo.GetAll()?.ToList() ?? new List<Instructor>();
-
-            ViewBag.Departments = new SelectList(depts, "Id", "Name", course.DeptId);
-            ViewBag.Instructors = new SelectList(instrs, "Id", "Name", course.InstructorId);
+            ViewBag.Departments = new SelectList(_deptRepo.GetAll()?.ToList() ?? new List<Department>(), "Id", "Name", course.DeptId);
+            ViewBag.Instructors = new SelectList(_instrRepo.GetAll()?.ToList() ?? new List<Instructor>(), "Id", "Name", course.InstructorId);
             return View(course);
         }
 
-        // delete
+        // Delete
         public IActionResult Delete(int id)
         {
             var course = _readRepo.GetById(id);
@@ -123,12 +129,12 @@ namespace MVC.Controllers
             _writeRepo.Delete(id);
             return RedirectToAction(nameof(List));
         }
+
+        // Join course (for session)
         public IActionResult Join(int courseId)
         {
-            // Store selected course in session
             HttpContext.Session.SetInt32("SelectedCourseId", courseId);
-
-            return RedirectToAction(nameof(List)); // return back to course list
+            return RedirectToAction(nameof(List));
         }
     }
 }

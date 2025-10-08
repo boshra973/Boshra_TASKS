@@ -2,6 +2,7 @@
 {
     public class RequestLoggingMiddleware
     {
+        // deligate
         private readonly RequestDelegate next;
 
         public RequestLoggingMiddleware(RequestDelegate next)
@@ -15,7 +16,7 @@
             var user = context.User.Identity.IsAuthenticated ? context.User.Identity.Name : "Anonymous";
             var timestamp = DateTime.Now;
 
-            // Log to console (you can also write to a file)
+            // output appear in console 3adi
             Console.WriteLine($"[{timestamp}] User: {user}, Path: {path}");
 
             await next(context);// to wait for the next request

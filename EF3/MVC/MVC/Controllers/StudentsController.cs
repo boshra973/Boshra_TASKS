@@ -5,9 +5,11 @@ using MVC.Filters;
 using MVC.Models;
 using MVC.Repositories.Interfaces;
 using System.Linq;
+
 namespace MVC.Controllers
 {
-    [Authorize]   
+    // who can access students controller? 
+    [Authorize(Roles = "Admin,Student,HR,Instructor")]
     // this excutes automatically -- note; it can be placed on specific ations 
     public class StudentsController : Controller
     {
@@ -26,8 +28,11 @@ namespace MVC.Controllers
         }
 
         //list
-        public IActionResult List(string search)
+        // list action with pagination
+        public IActionResult List(string search, int page = 1)
         {
+            int pageSize = 5; // number of items per page
+
             var students = _readRepo.GetAll().AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
@@ -35,9 +40,23 @@ namespace MVC.Controllers
                 students = students.Where(s => s.Name.Contains(search));
             }
 
+            // calculate total pages
+            int totalItems = students.Count();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            // get the items for current page
+            var pagedStudents = students
+                                .Skip((page - 1) * pageSize)
+                                .Take(pageSize)
+                                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
             ViewBag.Search = search;
-            return View(students.ToList());
+
+            return View(pagedStudents);
         }
+
 
         //details
         public IActionResult Details(int id)

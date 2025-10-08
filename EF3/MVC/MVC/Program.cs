@@ -8,18 +8,26 @@ using MVC.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ----------------------
-// Add services to the container (ALL services must be added BEFORE Build)
-// ----------------------
 
-// Add controllers
+//  controllers
 builder.Services.AddControllersWithViews();
 
-// Add DbContext
+// Roles ristrictions 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        //in case of no login
+        options.LoginPath = "/Account/Login";
+
+        // when access role denied 
+        options.AccessDeniedPath = "/Shared/AccessDenied"; 
+    });
+
+//  DbContext
 builder.Services.AddDbContext<ITIContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add repositories
+//  repositories
 builder.Services.AddScoped<IReadableRepository<Student>, StudentRepository>();
 builder.Services.AddScoped<IWritableRepository<Student>, StudentRepository>();
 
@@ -38,21 +46,15 @@ builder.Services.AddScoped<IWritableRepository<CourseStudents>, CourseStudentsRe
 //filter
 builder.Services.AddScoped<AuthorizeStudentFilter>();
 
-// Add Authentication (Cookie)
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Account/Login";
-    });
-
-// Add Session
+// add a session
 builder.Services.AddSession();
+
+// order is important 
+
 
 var app = builder.Build();
 
-// ----------------------
-// Configure the HTTP request pipeline
-// ----------------------
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -63,7 +65,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-// Enable session middleware
+//  session middleware
 app.UseSession();
 
 // Enable authentication and authorization

@@ -7,5 +7,7 @@ namespace MVC.Models
         [Required(ErrorMessage = "Username is required")]
         [Display(Name = "Username")]
         public string Username { get; set; }
+        //.empty to start empty then choose form the dropdown menu
+        public string Role { get; set; } = string.Empty;
     }
 }

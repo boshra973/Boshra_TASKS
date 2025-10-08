@@ -17,6 +17,7 @@ namespace MVC.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
+                // this must be correct for connection
                 optionsBuilder.UseSqlServer("Server=.;Database=ITI;Trusted_Connection=True;TrustServerCertificate=True;");
             }
         }

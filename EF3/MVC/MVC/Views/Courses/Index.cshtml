@@ -19,10 +19,7 @@
                 @Html.DisplayNameFor(model => model.Degree)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.MinimumDegree)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Hours)
+                @Html.DisplayNameFor(model => model.MinDegree)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Department)
@@ -43,11 +40,9 @@
                 @Html.DisplayFor(modelItem => item.Degree)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.MinimumDegree)
+                    @Html.DisplayFor(modelItem => item.MinDegree)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Hours)
-            </td>
+         
             <td>
                 @Html.DisplayFor(modelItem => item.Department.Id)
             </td>

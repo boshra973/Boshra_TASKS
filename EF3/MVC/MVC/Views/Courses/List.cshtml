@@ -1,11 +1,45 @@
 ﻿@model IEnumerable<MVC.Models.Course>
+@using System.Security.Claims
 
 <h2>Courses</h2>
+
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <div class="alert alert-success">
+        Welcome, @User.Identity.Name!
+    </div>
+
+    <div class="mb-2">
+        @if (User.IsInRole("Admin"))
+        {
+            <span>You are an Admin.</span>
+        }
+        else if (User.IsInRole("HR"))
+        {
+            <span>You are in HR.</span>
+        }
+        else if (User.IsInRole("Instructor"))
+        {
+            <span>You are an Instructor.</span>
+        }
+        else if (User.IsInRole("Student"))
+        {
+            <span>You are a Student.</span>
+        }
+    </div>
+
+    <form method="post" asp-controller="Account" asp-action="Logout">
+        <button type="submit" class="btn btn-danger mb-2">Logout</button>
+    </form>
+}
 
 <form method="get" asp-action="List" class="mb-3">
     <input type="text" name="search" value="@ViewBag.Search" placeholder="Search by course name..." class="form-control" />
 </form>
 
+<form method="get" asp-action="List" class="mb-3" style="display:inline-block;">
+    <button type="submit" class="btn btn-secondary">Reset Filters</button>
+</form>
 <table class="table table-bordered table-striped">
     <thead>
         <tr>
@@ -27,8 +61,10 @@
                 <td>
                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Details</a>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
-
+                    <form method="post" asp-action="Delete" asp-route-id="@item.Id" style="display:inline;"
+                          onsubmit="return confirm('Are you sure you want to delete this course?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
                     @* Join course part  *@
                     @if (ViewBag.SelectedCourseId != null && item.Id == ViewBag.SelectedCourseId)
                     {

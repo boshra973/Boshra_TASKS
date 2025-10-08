@@ -32,6 +32,7 @@ namespace MVC.Repositories.Implementations
         public void Add(Course entity)
         {
             _context.Courses.Add(entity);
+            // all changes must be saved 
             _context.SaveChanges();
         }
 
