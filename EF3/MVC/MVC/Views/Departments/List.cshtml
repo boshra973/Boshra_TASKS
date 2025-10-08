@@ -6,13 +6,13 @@
 
 <h2>Departments</h2>
 
-<!-- 🔍 Search Form -->
+<!-- the search part -->
 <form method="get" asp-action="List" class="mb-3">
     <input type="text" name="search" value="@ViewBag.Search" placeholder="Search by Name or Manager" class="form-control" style="width:300px; display:inline-block;" />
     <button type="submit" class="btn btn-primary">Search</button>
 </form>
 
-<!-- 🧾 Table -->
+
 <table class="table table-bordered table-striped">
     <thead>
         <tr>

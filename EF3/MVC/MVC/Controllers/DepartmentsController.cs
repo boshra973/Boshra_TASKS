@@ -1,17 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MVC.Models;
+using MVC.Repositories.Interfaces;
 using System.Linq;
 
 namespace MVC.Controllers
 {
     public class DepartmentsController : Controller
     {
-        ITIContext context = new ITIContext();
+        private readonly IReadableRepository<Department> _readRepo;
+        private readonly IWritableRepository<Department> _writeRepo;
 
-        // LIST with Search
+        public DepartmentsController(
+            IReadableRepository<Department> readRepo,
+            IWritableRepository<Department> writeRepo)
+        {
+            _readRepo = readRepo;
+            _writeRepo = writeRepo;
+        }
+
+        // list //search
         public IActionResult List(string search)
         {
-            var departments = context.Departments.AsQueryable();
+            var departments = _readRepo.GetAll().AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -19,66 +29,67 @@ namespace MVC.Controllers
                     .Where(d => d.Name.Contains(search) || d.ManagerName.Contains(search));
             }
 
-            ViewBag.Search = search; // keep the text in the search box
+            ViewBag.Search = search;
             return View(departments.ToList());
         }
 
+        // details
         public IActionResult Details(int id)
         {
-            var department = context.Departments.FirstOrDefault(d => d.Id == id);
+            var department = _readRepo.GetById(id);
             if (department == null) return NotFound();
             return View(department);
         }
 
-        // Create GET
+        // create get
         public IActionResult Create()
         {
             return View();
         }
 
-        // Create POST
+        //crete post
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Department department)
         {
             if (ModelState.IsValid)
             {
-                context.Departments.Add(department);
-                context.SaveChanges();
+                _writeRepo.Add(department);
                 return RedirectToAction(nameof(List));
             }
             return View(department);
         }
 
-        // Edit GET
+        // edit get
         public IActionResult Edit(int id)
         {
-            var department = context.Departments.FirstOrDefault(d => d.Id == id);
+            var department = _readRepo.GetById(id);
             if (department == null) return NotFound();
             return View(department);
         }
 
-        // Edit POST
+        //edit post 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Department department)
         {
             if (id != department.Id) return NotFound();
+
             if (ModelState.IsValid)
             {
-                context.Departments.Update(department);
-                context.SaveChanges();
+                _writeRepo.Update(department);
                 return RedirectToAction(nameof(List));
             }
             return View(department);
         }
 
+        // delete
         public IActionResult Delete(int id)
         {
-            var department = context.Departments.FirstOrDefault(d => d.Id == id);
+            var department = _readRepo.GetById(id);
             if (department == null) return NotFound();
-            context.Departments.Remove(department);
-            context.SaveChanges();
+
+            _writeRepo.Delete(id);
             return RedirectToAction(nameof(List));
         }
     }

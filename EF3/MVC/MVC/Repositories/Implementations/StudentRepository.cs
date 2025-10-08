@@ -1,10 +1,12 @@
-﻿using MVC.Models; // Your DbContext and Student model
+﻿using MVC.Models; 
 using MVC.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
+//DIP : depend on abstraction principle
 public class StudentRepository : IReadableRepository<Student>, IWritableRepository<Student>
 {
+    // this only handels dtudent data operations (SRP)
     private readonly ITIContext context;
 
     public StudentRepository(ITIContext context)
@@ -12,7 +14,7 @@ public class StudentRepository : IReadableRepository<Student>, IWritableReposito
         this.context = context;
     }
 
-    // Reading operations
+    // Reading operations do only what it need
     public Student GetById(int id)
     {
         return context.Students.FirstOrDefault(s => s.Id == id);
@@ -23,7 +25,7 @@ public class StudentRepository : IReadableRepository<Student>, IWritableReposito
         return context.Students.ToList();
     }
 
-    // Writing operations
+    // Writing operations only 
     public void Add(Student student)
     {
         context.Students.Add(student);

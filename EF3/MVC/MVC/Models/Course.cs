@@ -13,7 +13,7 @@ namespace MVC.Models
         public int MinimumDegree { get; set; }
         public int Hours { get; set; }
 
-        // FK by convention
+        // foreign key 
         [Required]
         public int DeptId { get; set; }
         public Department? Department { get; set; }

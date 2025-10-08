@@ -4,6 +4,10 @@ namespace MVC.Models
 {
     public class ITIContext : DbContext
     {
+        // we must set a parameterless constructor 
+        public ITIContext(DbContextOptions<ITIContext> options) : base(options)
+        {
+        }
         public DbSet<Student> Students { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Course> Courses { get; set; }
@@ -43,8 +47,8 @@ namespace MVC.Models
                 .HasForeignKey(c => c.InstructorId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Composite key for junction table
-            modelBuilder.Entity<CourseStudents>()
+            
+            modelBuilder.Entity<CourseStudents>()  // composite key 
                 .HasKey(cs => new { cs.StudentId, cs.CourseId });
         }
        

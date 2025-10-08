@@ -1,18 +1,34 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MVC.Filters;
 using MVC.Models;
+using MVC.Repositories.Interfaces;
 using System.Linq;
-
 namespace MVC.Controllers
 {
+    [Authorize]   
+    // this excutes automatically -- note; it can be placed on specific ations 
     public class StudentsController : Controller
     {
-        ITIContext context = new ITIContext();
+        private readonly IReadableRepository<Student> _readRepo;
+        private readonly IWritableRepository<Student> _writeRepo;
+        private readonly IReadableRepository<Department> _deptRepo;
 
-        // ---------- LIST ----------
+        public StudentsController(
+            IReadableRepository<Student> readRepo,
+            IWritableRepository<Student> writeRepo,
+            IReadableRepository<Department> deptRepo)
+        {
+            _readRepo = readRepo;
+            _writeRepo = writeRepo;
+            _deptRepo = deptRepo;
+        }
+
+        //list
         public IActionResult List(string search)
         {
-            var students = context.Students.AsQueryable();
+            var students = _readRepo.GetAll().AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -23,48 +39,51 @@ namespace MVC.Controllers
             return View(students.ToList());
         }
 
-        // ---------- DETAILS ----------
+        //details
         public IActionResult Details(int id)
         {
-            var student = context.Students.FirstOrDefault(s => s.Id == id);
+            var student = _readRepo.GetById(id);
             if (student == null) return NotFound();
             return View(student);
         }
 
-        // ---------- CREATE GET ----------
+        //create get
         public IActionResult Create()
         {
-            ViewBag.Departments = new SelectList(context.Departments.ToList(), "Id", "Name");
+            // Make sure Departments list is not null
+            var departments = _deptRepo.GetAll()?.ToList() ?? new List<Department>();
+            ViewBag.Departments = new SelectList(departments, "Id", "Name");
             return View();
         }
 
-        // ---------- CREATE POST ----------
+        // create post 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Student student)
         {
             if (ModelState.IsValid)
             {
-                context.Students.Add(student);
-                context.SaveChanges();
+                _writeRepo.Add(student);
                 return RedirectToAction(nameof(List));
             }
 
-            ViewBag.Departments = new SelectList(context.Departments.ToList(), "Id", "Name");
+            var departments = _deptRepo.GetAll()?.ToList() ?? new List<Department>();
+            ViewBag.Departments = new SelectList(departments, "Id", "Name", student.DeptId);
             return View(student);
         }
 
-        // ---------- EDIT GET ----------
+        // edit get
         public IActionResult Edit(int id)
         {
-            var student = context.Students.FirstOrDefault(s => s.Id == id);
+            var student = _readRepo.GetById(id);
             if (student == null) return NotFound();
 
-            ViewBag.Departments = new SelectList(context.Departments.ToList(), "Id", "Name", student.DeptId);
+            var departments = _deptRepo.GetAll()?.ToList() ?? new List<Department>();
+            ViewBag.Departments = new SelectList(departments, "Id", "Name", student.DeptId);
             return View(student);
         }
 
-        // ---------- EDIT POST ----------
+        // edit post 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Student student)
@@ -73,23 +92,22 @@ namespace MVC.Controllers
 
             if (ModelState.IsValid)
             {
-                context.Students.Update(student);
-                context.SaveChanges();
+                _writeRepo.Update(student);
                 return RedirectToAction(nameof(List));
             }
 
-            ViewBag.Departments = new SelectList(context.Departments.ToList(), "Id", "Name", student.DeptId);
+            var departments = _deptRepo.GetAll()?.ToList() ?? new List<Department>();
+            ViewBag.Departments = new SelectList(departments, "Id", "Name", student.DeptId);
             return View(student);
         }
 
-        // DELETE
+        // delete
         public IActionResult Delete(int id)
         {
-            var student = context.Students.FirstOrDefault(s => s.Id == id);
+            var student = _readRepo.GetById(id);
             if (student == null) return NotFound();
 
-            context.Students.Remove(student);
-            context.SaveChanges();
+            _writeRepo.Delete(id);
             return RedirectToAction(nameof(List));
         }
     }
