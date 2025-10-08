@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MVC.Models;
 using System.Linq;
@@ -9,13 +10,15 @@ namespace MVC.Controllers
     {
         ITIContext context = new ITIContext();
 
-        // LIST with Search
+        // ---------- LIST (with search) ----------
+
         public IActionResult List(string search)
         {
             var courses = context.Courses
-                                 .Include(c => c.Department)
-                                 .Include(c => c.Instructor)
-                                 .AsQueryable();
+                // we want the departments and instructors to apper
+                .Include(c => c.Department)
+                .Include(c => c.Instructor)
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -25,25 +28,23 @@ namespace MVC.Controllers
             ViewBag.Search = search;
             return View(courses.ToList());
         }
-
+        // ---------- DETAILS ----------
         public IActionResult Details(int id)
         {
-            var course = context.Courses
-                                .Include(c => c.Department)
-                                .Include(c => c.Instructor)
-                                .FirstOrDefault(c => c.Id == id);
-
+            var course = context.Courses.FirstOrDefault(c => c.Id == id);
             if (course == null) return NotFound();
             return View(course);
         }
 
+        // ---------- CREATE GET ----------
         public IActionResult Create()
         {
-            ViewBag.Departments = context.Departments.ToList();
-            ViewBag.Instructors = context.Instructors.ToList();
+            ViewBag.Departments = new SelectList(context.Departments.ToList(), "Id", "Name");
+            ViewBag.Instructors = new SelectList(context.Instructors.ToList(), "Id", "Name");
             return View();
         }
 
+        // ---------- CREATE POST ----------
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Course course)
@@ -55,21 +56,23 @@ namespace MVC.Controllers
                 return RedirectToAction(nameof(List));
             }
 
-            ViewBag.Departments = context.Departments.ToList();
-            ViewBag.Instructors = context.Instructors.ToList();
+            ViewBag.Departments = new SelectList(context.Departments.ToList(), "Id", "Name", course.DeptId);
+            ViewBag.Instructors = new SelectList(context.Instructors.ToList(), "Id", "Name", course.InstructorId);
             return View(course);
         }
 
+        // ---------- EDIT GET ----------
         public IActionResult Edit(int id)
         {
             var course = context.Courses.FirstOrDefault(c => c.Id == id);
             if (course == null) return NotFound();
 
-            ViewBag.Departments = context.Departments.ToList();
-            ViewBag.Instructors = context.Instructors.ToList();
+            ViewBag.Departments = new SelectList(context.Departments.ToList(), "Id", "Name", course.DeptId);
+            ViewBag.Instructors = new SelectList(context.Instructors.ToList(), "Id", "Name", course.InstructorId);
             return View(course);
         }
 
+        // ---------- EDIT POST ----------
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Course course)
@@ -83,11 +86,12 @@ namespace MVC.Controllers
                 return RedirectToAction(nameof(List));
             }
 
-            ViewBag.Departments = context.Departments.ToList();
-            ViewBag.Instructors = context.Instructors.ToList();
+            ViewBag.Departments = new SelectList(context.Departments.ToList(), "Id", "Name", course.DeptId);
+            ViewBag.Instructors = new SelectList(context.Instructors.ToList(), "Id", "Name", course.InstructorId);
             return View(course);
         }
 
+        // ---------- DELETE ----------
         public IActionResult Delete(int id)
         {
             var course = context.Courses.FirstOrDefault(c => c.Id == id);

@@ -1,53 +1,37 @@
 ﻿@model IEnumerable<MVC.Models.Course>
 
-@{
-    ViewData["Title"] = "Courses List";
-}
+<h2>Courses</h2>
 
-<h2 class="mb-3">Courses</h2>
-
-<!-- 🔍 Search Bar -->
-<form method="get" asp-action="List" class="mb-3 d-flex">
-    <input type="text" name="search" value="@ViewBag.Search" class="form-control me-2" placeholder="Search by Course Name..." />
-    <button type="submit" class="btn btn-primary">Search</button>
+<form method="get" asp-action="List" class="mb-3">
+    <input type="text" name="search" value="@ViewBag.Search" placeholder="Search by course name..." class="form-control" />
 </form>
 
-<!-- 🧾 Courses Table -->
-<table class="table table-bordered table-striped text-center align-middle">
-    <thead class="table-dark">
+<table class="table table-bordered table-striped">
+    <thead>
         <tr>
-            <th>Id</th>
-            <th>Course Name</th>
-            <th>Department</th>
-            <th>Instructor</th>
-            <th style="width: 150px;">Actions</th>
+            <th style="width:10%">ID</th>
+            <th style="width:25%">Course Name</th>
+            <th style="width:25%">Department</th>
+            <th style="width:25%">Instructor</th>
+            <th style="width:15%">Actions</th>
         </tr>
     </thead>
     <tbody>
-        @if (Model != null && Model.Any())
-        {
-            foreach (var c in Model)
-            {
-                <tr>
-                    <td>@c.Id</td>
-                    <td>@c.Name</td>
-                    <td>@c.Department?.Name</td>
-                    <td>@c.Instructor?.Name</td>
-                    <td style="white-space: nowrap;">
-                        <a asp-action="Details" asp-route-id="@c.Id" class="btn btn-info btn-sm me-1">Details</a>
-                        <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-warning btn-sm me-1">Edit</a>
-                        <a asp-action="Delete" asp-route-id="@c.Id" class="btn btn-danger btn-sm">Delete</a>
-                    </td>
-                </tr>
-            }
-        }
-        else
+        @foreach (var item in Model)
         {
             <tr>
-                <td colspan="5" class="text-muted">No courses found.</td>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+                <td>@item.Department?.Name</td>
+                <td>@item.Instructor?.Name</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
+                </td>
             </tr>
         }
     </tbody>
 </table>
 
-<a asp-action="Create" class="btn btn-success mt-2">Create New Course</a>
+<a asp-action="Create" class="btn btn-primary mt-2">Create New Course</a>

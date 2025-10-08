@@ -6,18 +6,22 @@
     <div class="form-group">
         <label asp-for="Name"></label>
         <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label asp-for="DeptId"></label>
-        <input asp-for="DeptId" class="form-control" />
+        <label asp-for="DeptId">Department</label>
+        <select asp-for="DeptId" asp-items="ViewBag.Departments" class="form-control"></select>
+        <span asp-validation-for="DeptId" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label asp-for="InstructorId"></label>
-        <input asp-for="InstructorId" class="form-control" />
+        <label asp-for="InstructorId">Instructor</label>
+        <select asp-for="InstructorId" asp-items="ViewBag.Instructors" class="form-control"></select>
+        <span asp-validation-for="InstructorId" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <input type="submit" value="Create" class="btn btn-primary" />
-    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Create</button>
 </form>
 
-<a asp-action="List">Back to List</a>
+<a asp-action="List" class="btn btn-secondary mt-2">Back to List</a>

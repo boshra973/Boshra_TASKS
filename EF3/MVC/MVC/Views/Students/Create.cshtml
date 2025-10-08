@@ -1,23 +1,42 @@
 ﻿@model MVC.Models.Student
 
+@{
+    ViewData["Title"] = "Create Student";
+}
+
 <h2>Create Student</h2>
 
 <form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
     <div class="form-group">
-        <label asp-for="Name"></label>
+        <label asp-for="Name" class="control-label"></label>
         <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label asp-for="Address"></label>
+        <label asp-for="Address" class="control-label"></label>
         <input asp-for="Address" class="form-control" />
+        <span asp-validation-for="Address" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label asp-for="DeptId"></label>
-        <input asp-for="DeptId" class="form-control" />
+        <label asp-for="Grade" class="control-label"></label>
+        <input asp-for="Grade" class="form-control" />
+        <span asp-validation-for="Grade" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <input type="submit" value="Create" class="btn btn-primary" />
+        <label asp-for="DeptId" class="control-label">Department</label>
+        <select asp-for="DeptId" class="form-control" asp-items="ViewBag.Departments"></select>
+        <span asp-validation-for="DeptId" class="text-danger"></span>
     </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Create</button>
+    <a asp-action="List" class="btn btn-secondary mt-3">Back to List</a>
 </form>
 
-<a asp-action="List">Back to List</a>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,19 +1,30 @@
 ﻿@model MVC.Models.Department
 
-<h2>Create Department</h2>
+@{
+    ViewData["Title"] = "Create Department";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // (if layout exists later)
+}
 
+<h2>Create Department</h2>
+<!--we can use tag helpers here only for saving time,, same logic in students,insturcors,courses-->
 <form asp-action="Create" method="post">
     <div class="form-group">
-        <label asp-for="Name"></label>
+        <label asp-for="Name" class="control-label"></label>
         <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label asp-for="ManagerName"></label>
+        <label asp-for="ManagerName" class="control-label"></label>
         <input asp-for="ManagerName" class="form-control" />
+        <span asp-validation-for="ManagerName" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <input type="submit" value="Create" class="btn btn-primary" />
-    </div>
+
+    <br />
+    <input type="submit" value="Create" class="btn btn-primary" />
+    <a asp-action="List" class="btn btn-secondary">Back to List</a>
 </form>
 
-<a asp-action="List">Back to List</a>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

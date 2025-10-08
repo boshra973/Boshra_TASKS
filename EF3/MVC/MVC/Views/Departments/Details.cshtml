@@ -1,13 +1,24 @@
-﻿@model MVC.Models.CourseStudents
+﻿@model MVC.Models.Department
 
-<h2>Course Student Details</h2>
+@{
+    ViewData["Title"] = "Department Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Department Details</h2>
 
 <div>
-    <p><strong>Student:</strong> @Model.Student?.Name</p>
-    <p><strong>Course:</strong> @Model.Course?.Name</p>
-    <p><strong>Degree:</strong> @Model.Degree</p>
+    <dl class="row">
+        <dt class="col-sm-2">Id</dt>
+        <dd class="col-sm-10">@Model.Id</dd>
+
+        <dt class="col-sm-2">Name</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+
+        <dt class="col-sm-2">Manager</dt>
+        <dd class="col-sm-10">@Model.ManagerName</dd>
+    </dl>
 </div>
 
-<p>
-    <a asp-action="List">Back to List</a>
-</p>
+<a asp-action="List" class="btn btn-secondary">Back to List</a>
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
